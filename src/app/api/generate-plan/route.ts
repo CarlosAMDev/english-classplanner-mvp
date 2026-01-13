@@ -1,6 +1,23 @@
+/**
+ * API Route: Generate Dialectical Lesson Plan
+ * 
+ * Este endpoint genera planes de clase con enfoque dialéctico materialista
+ * utilizando la API de Google Gemini.
+ * 
+ * FUENTES DE CONSULTA:
+ * - Cambridge English (cambridgeenglish.org)
+ * - British Council (britishcouncil.org)
+ * - Marco Común Europeo de Referencia (CEFR)
+ * 
+ * ENFOQUE PEDAGÓGICO:
+ * - Dialéctica Materialista (Tesis - Antítesis - Síntesis)
+ * - Praxis social y transformadora
+ * - Conexión con realidad material del estudiante
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { GenerateRequest, GenerateResponse } from "@/types";
-import { generateWithOpenAI, buildPrompt } from "@/lib/ai-generator";
+import { generateWithGemini, buildDialecticalPrompt } from "@/lib/ai-generator";
 
 export async function POST(request: NextRequest): Promise<NextResponse<GenerateResponse>> {
   try {
@@ -12,19 +29,19 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       return NextResponse.json(
         {
           success: false,
-          error: "Missing required parameters: level, topic, duration, and focus are required",
+          error: "Parámetros requeridos: nivel, tema, duración y enfoque",
         },
         { status: 400 }
       );
     }
 
-    // Validate level
+    // Validate level (CEFR)
     const validLevels = ["A1", "A2", "B1", "B2", "C1"];
     if (!validLevels.includes(parameters.level)) {
       return NextResponse.json(
         {
           success: false,
-          error: `Invalid level. Must be one of: ${validLevels.join(", ")}`,
+          error: `Nivel inválido. Debe ser uno de: ${validLevels.join(", ")}`,
         },
         { status: 400 }
       );
@@ -36,7 +53,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       return NextResponse.json(
         {
           success: false,
-          error: `Invalid duration. Must be one of: ${validDurations.join(", ")} minutes`,
+          error: `Duración inválida. Debe ser: ${validDurations.join(", ")} minutos`,
         },
         { status: 400 }
       );
@@ -48,31 +65,32 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       return NextResponse.json(
         {
           success: false,
-          error: `Invalid focus. Must be one of: ${validFocuses.join(", ")}`,
+          error: `Enfoque inválido. Debe ser: ${validFocuses.join(", ")}`,
         },
         { status: 400 }
       );
     }
 
-    // Log the prompt that would be sent to AI (for debugging)
-    const prompt = buildPrompt(parameters);
-    console.log("=== AI PROMPT ===");
-    console.log(prompt);
-    console.log("=================");
+    // Build and log the dialectical prompt (for debugging)
+    const prompt = buildDialecticalPrompt(parameters);
+    console.log("=== DIALECTICAL PROMPT ===");
+    console.log("Parameters:", JSON.stringify(parameters, null, 2));
+    console.log("Prompt length:", prompt.length);
+    console.log("==========================");
 
-    // Generate the lesson plan
-    const plan = await generateWithOpenAI(parameters);
+    // Generate the dialectical lesson plan using Gemini
+    const plan = await generateWithGemini(parameters);
 
     return NextResponse.json({
       success: true,
       plan,
     });
   } catch (error) {
-    console.error("Error generating lesson plan:", error);
+    console.error("Error generating dialectical lesson plan:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "An error occurred while generating the lesson plan",
+        error: "Error al generar el plan de clase. Por favor, intente de nuevo.",
       },
       { status: 500 }
     );
