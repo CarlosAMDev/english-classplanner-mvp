@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LessonPlan, LessonParameters, GenerateResponse, DialecticalSection } from "@/types";
+import { LessonPlan, LessonParameters, GenerateResponse, LessonStage } from "@/types";
 import ParameterForm from "@/components/ParameterForm";
 import PlanDisplay from "@/components/PlanDisplay";
 
@@ -28,10 +28,10 @@ export default function Home() {
       if (data.success && data.plan) {
         setPlan(data.plan);
       } else {
-        setError(data.error || "Error al generar el plan de clase");
+        setError(data.error || "Error generating lesson plan");
       }
     } catch (err) {
-      setError("Error de red. Por favor, intente de nuevo.");
+      setError("Network error. Please try again.");
       console.error("Error:", err);
     } finally {
       setIsLoading(false);
@@ -152,45 +152,45 @@ export default function Home() {
         yPosition += 6;
       };
 
-      // Helper: Add dialectical section
-      const addDialecticalSection = (
-        section: DialecticalSection,
-        phaseLabel: string,
+      // Helper: Add lesson stage section
+      const addLessonStage = (
+        stage: LessonStage,
+        stageLabel: string,
         accentColor: [number, number, number]
       ) => {
         checkNewPage(35);
         
-        // Phase badge
+        // Stage badge
         doc.setFillColor(...accentColor);
         doc.roundedRect(marginLeft, yPosition - 5, contentWidth, 14, 2, 2, "F");
         
-        // Phase label
+        // Stage label
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.setFillColor(255, 255, 255);
-        doc.roundedRect(marginLeft + 5, yPosition - 3, doc.getTextWidth(phaseLabel) + 8, 6, 1, 1, "F");
+        doc.roundedRect(marginLeft + 5, yPosition - 3, doc.getTextWidth(stageLabel) + 8, 6, 1, 1, "F");
         doc.setTextColor(...accentColor);
-        doc.text(phaseLabel, marginLeft + 9, yPosition + 1);
+        doc.text(stageLabel, marginLeft + 9, yPosition + 1);
         
         // Title
         doc.setFontSize(11);
         doc.setTextColor(255, 255, 255);
-        doc.text(cleanMarkdown(section.title), marginLeft + doc.getTextWidth(phaseLabel) + 20, yPosition + 1);
+        doc.text(cleanMarkdown(stage.title), marginLeft + doc.getTextWidth(stageLabel) + 20, yPosition + 1);
         
         // Duration
         doc.setFontSize(9);
-        const durationText = section.duration;
+        const durationText = stage.duration;
         doc.text(durationText, marginLeft + contentWidth - doc.getTextWidth(durationText) - 5, yPosition + 1);
         
         doc.setTextColor(0, 0, 0);
         yPosition += 14;
 
-        // Dialectical objective
-        if (section.dialecticalObjective) {
+        // Stage objective
+        if (stage.stageObjective) {
           doc.setFontSize(9);
           doc.setFont("helvetica", "italic");
           doc.setTextColor(100, 100, 100);
-          const objLines = doc.splitTextToSize(`Objetivo: ${cleanMarkdown(section.dialecticalObjective)}`, contentWidth - 10);
+          const objLines = doc.splitTextToSize(`Objective: ${cleanMarkdown(stage.stageObjective)}`, contentWidth - 10);
           objLines.forEach((line: string) => {
             doc.text(line, marginLeft + 3, yPosition);
             yPosition += 4;
@@ -200,31 +200,31 @@ export default function Home() {
         }
 
         // Activities
-        if (section.activities && section.activities.length > 0) {
+        if (stage.activities && stage.activities.length > 0) {
           doc.setFontSize(10);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(55, 65, 81);
-          doc.text("Actividades:", marginLeft + 3, yPosition);
+          doc.text("Activities:", marginLeft + 3, yPosition);
           yPosition += 6;
           doc.setTextColor(0, 0, 0);
           
-          section.activities.forEach((activity) => {
+          stage.activities.forEach((activity) => {
             addBulletPoint(activity, 3, accentColor);
           });
         }
 
         // Materials
-        if (section.materials && section.materials.length > 0) {
+        if (stage.materials && stage.materials.length > 0) {
           yPosition += 2;
           checkNewPage(10);
           doc.setFontSize(9);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(107, 114, 128);
-          doc.text("Materiales: ", marginLeft + 3, yPosition);
-          const labelWidth = doc.getTextWidth("Materiales: ");
+          doc.text("Materials: ", marginLeft + 3, yPosition);
+          const labelWidth = doc.getTextWidth("Materials: ");
           doc.setFont("helvetica", "normal");
           
-          const materialsText = section.materials.map(m => cleanMarkdown(m)).join(", ");
+          const materialsText = stage.materials.map(m => cleanMarkdown(m)).join(", ");
           const materialsLines = doc.splitTextToSize(materialsText, contentWidth - labelWidth - 6);
           doc.text(materialsLines[0], marginLeft + 3 + labelWidth, yPosition);
           yPosition += 4;
@@ -237,11 +237,11 @@ export default function Home() {
         }
 
         // Teacher notes
-        if (section.teacherNotes) {
+        if (stage.teacherNotes) {
           yPosition += 2;
           checkNewPage(15);
           doc.setFillColor(254, 249, 195);
-          const cleanedNotes = cleanMarkdown(section.teacherNotes);
+          const cleanedNotes = cleanMarkdown(stage.teacherNotes);
           const notesLines = doc.splitTextToSize(cleanedNotes, contentWidth - 16);
           const notesHeight = 6 + (notesLines.length * 4);
           doc.roundedRect(marginLeft + 3, yPosition - 2, contentWidth - 6, notesHeight, 1, 1, "F");
@@ -249,7 +249,7 @@ export default function Home() {
           doc.setFontSize(8);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(161, 98, 7);
-          doc.text("Notas del docente:", marginLeft + 6, yPosition + 2);
+          doc.text("Teacher Notes:", marginLeft + 6, yPosition + 2);
           yPosition += 5;
           
           doc.setFont("helvetica", "italic");
@@ -268,8 +268,8 @@ export default function Home() {
 
       // ========== BUILD PDF ==========
 
-      // Header - Red gradient style
-      doc.setFillColor(185, 28, 28); // Red-700
+      // Header - Blue gradient style
+      doc.setFillColor(29, 78, 216); // Blue-700
       doc.rect(0, 0, pageWidth, 50, "F");
       
       // Title
@@ -287,15 +287,15 @@ export default function Home() {
       // Subtitle
       doc.setFontSize(9);
       doc.setFont("helvetica", "italic");
-      doc.text("Plan de clase con enfoque dialéctico materialista", marginLeft, titleY + 2);
+      doc.text("Lesson Plan - PPP Methodology", marginLeft, titleY + 2);
 
       // Meta badges
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       const badges = [
-        `Nivel: ${plan.level}`,
+        `Level: ${plan.level}`,
         plan.duration,
-        `Enfoque: ${plan.focus}`,
+        `Focus: ${plan.focus}`,
       ];
       let badgeX = marginLeft;
       const badgeY = 44;
@@ -312,12 +312,12 @@ export default function Home() {
       doc.setTextColor(0, 0, 0);
       yPosition = 60;
 
-      // Social Context
+      // Lesson Context
       addInfoBox(
-        "Contexto Social",
-        plan.contextoSocial,
-        [255, 251, 235], // Amber-50
-        [146, 64, 14] // Amber-800
+        "Lesson Context",
+        plan.lessonContext,
+        [241, 245, 249], // Slate-100
+        [51, 65, 85] // Slate-700
       );
 
       // Learning Objectives
@@ -325,7 +325,7 @@ export default function Home() {
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(30, 64, 175);
-      doc.text("Objetivos de Aprendizaje", marginLeft, yPosition);
+      doc.text("Learning Objectives", marginLeft, yPosition);
       yPosition += 6;
       doc.setTextColor(0, 0, 0);
       
@@ -334,34 +334,35 @@ export default function Home() {
       });
       yPosition += 5;
 
-      // Dialectical Sections
-      addDialecticalSection(plan.tesis, "TESIS", [37, 99, 235]); // Blue
-      addDialecticalSection(plan.antitesis, "ANTÍTESIS", [234, 88, 12]); // Orange
-      addDialecticalSection(plan.sintesis, "SÍNTESIS", [22, 163, 74]); // Green
+      // PPP Stages
+      addLessonStage(plan.leadIn, "LEAD-IN", [147, 51, 234]); // Purple
+      addLessonStage(plan.presentation, "PRESENTATION", [37, 99, 235]); // Blue
+      addLessonStage(plan.practice, "PRACTICE", [234, 88, 12]); // Orange
+      addLessonStage(plan.production, "PRODUCTION", [22, 163, 74]); // Green
 
-      // Praxis Activity
+      // Wrap-up
       checkNewPage(30);
-      doc.setFillColor(254, 226, 226); // Red-100
-      doc.setDrawColor(185, 28, 28); // Red-700
+      doc.setFillColor(238, 242, 255); // Indigo-50
+      doc.setDrawColor(99, 102, 241); // Indigo-500
       doc.setLineWidth(0.5);
       
-      const praxisContent = cleanMarkdown(plan.actividadPraxis);
+      const wrapUpContent = cleanMarkdown(plan.wrapUp);
       doc.setFontSize(10);
-      const praxisLines = doc.splitTextToSize(praxisContent, contentWidth - 16);
-      const praxisBoxHeight = 12 + (praxisLines.length * 5);
+      const wrapUpLines = doc.splitTextToSize(wrapUpContent, contentWidth - 16);
+      const wrapUpBoxHeight = 12 + (wrapUpLines.length * 5);
       
-      doc.roundedRect(marginLeft, yPosition - 4, contentWidth, praxisBoxHeight, 2, 2, "FD");
+      doc.roundedRect(marginLeft, yPosition - 4, contentWidth, wrapUpBoxHeight, 2, 2, "FD");
       
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(127, 29, 29); // Red-900
-      doc.text("Actividad de Praxis - Acción Transformadora", marginLeft + 5, yPosition + 3);
+      doc.setTextColor(67, 56, 202); // Indigo-700
+      doc.text("Wrap-up", marginLeft + 5, yPosition + 3);
       yPosition += 10;
       
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(153, 27, 27); // Red-800
-      praxisLines.forEach((line: string) => {
+      doc.setTextColor(79, 70, 229); // Indigo-600
+      wrapUpLines.forEach((line: string) => {
         doc.text(line, marginLeft + 5, yPosition);
         yPosition += 5;
       });
@@ -371,12 +372,12 @@ export default function Home() {
 
       // Homework
       if (plan.homework) {
-        addInfoBox("Tarea", plan.homework, [239, 246, 255], [30, 64, 175]);
+        addInfoBox("Homework", plan.homework, [239, 246, 255], [30, 64, 175]);
       }
 
       // Assessment
       if (plan.assessment) {
-        addInfoBox("Evaluación", plan.assessment, [240, 253, 244], [22, 101, 52]);
+        addInfoBox("Assessment", plan.assessment, [240, 253, 244], [22, 101, 52]);
       }
 
       // ========== FOOTERS ==========
@@ -393,13 +394,13 @@ export default function Home() {
         doc.setFont("helvetica", "italic");
         doc.setTextColor(156, 163, 175);
         doc.text(
-          "English Plan Creator | Enfoque Dialéctico Materialista | Cambridge English & British Council",
+          "English Plan Creator | PPP Methodology | Cambridge English & British Council",
           marginLeft,
           pageHeight - marginBottom + 6
         );
         
         doc.setFont("helvetica", "normal");
-        const pageText = `Página ${i} de ${totalPages}`;
+        const pageText = `Page ${i} of ${totalPages}`;
         const pageTextWidth = doc.getTextWidth(pageText);
         doc.text(
           pageText,
@@ -409,12 +410,12 @@ export default function Home() {
       }
 
       // Save
-      const fileName = `plan-dialectico-${plan.level}-${plan.focus.toLowerCase()}-${Date.now()}.pdf`;
+      const fileName = `lesson-plan-${plan.level}-${plan.focus.toLowerCase()}-${Date.now()}.pdf`;
       doc.save(fileName);
       
     } catch (err) {
       console.error("Error generating PDF:", err);
-      alert("Error al generar el PDF. Por favor, intente de nuevo.");
+      alert("Error generating PDF. Please try again.");
     }
   };
 
@@ -424,33 +425,33 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen py-8 px-4 bg-gradient-to-b from-gray-50 to-gray-100">
+    <main className="min-h-screen py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <header className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-800 mb-3">
+        <header className="text-center mb-6 sm:mb-8 md:mb-10">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 sm:mb-3">
             English Plan Creator
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Genera planes de clase estructurados con enfoque dialéctico materialista,
-            basados en estándares de Cambridge English y British Council.
+          <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2">
+            Generate structured lesson plans using international ELT methodology,
+            based on Cambridge English and British Council standards.
           </p>
-          <div className="mt-3 flex justify-center gap-2 text-xs">
+          <div className="mt-3 flex flex-wrap justify-center gap-2 text-xs">
             <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full">CEFR</span>
-            <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full">Dialéctica Materialista</span>
-            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full">Praxis Social</span>
+            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full">PPP Methodology</span>
+            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full">Communicative Approach</span>
           </div>
         </header>
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {/* Left Column - Form */}
-          <div>
-            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <span className="p-2 bg-red-100 rounded-lg">
+          <div className="order-1">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:sticky lg:top-8">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2">
+                <span className="p-1.5 sm:p-2 bg-blue-100 rounded-lg">
                   <svg
-                    className="w-5 h-5 text-red-600"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -463,16 +464,16 @@ export default function Home() {
                     />
                   </svg>
                 </span>
-                Parámetros de la Clase
+                Lesson Parameters
               </h2>
               <ParameterForm onSubmit={handleGenerate} isLoading={isLoading} />
             </div>
           </div>
 
           {/* Right Column - Results */}
-          <div>
+          <div className="order-2">
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+              <div className="bg-red-50 border border-red-200 rounded-lg sm:rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
                 <div className="flex items-center gap-3">
                   <svg
                     className="w-5 h-5 text-red-500"
@@ -494,8 +495,8 @@ export default function Home() {
 
             {plan ? (
               <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-gray-800">Plan Generado</h2>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800">Generated Plan</h2>
                   <button
                     onClick={handleReset}
                     className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
@@ -513,7 +514,7 @@ export default function Home() {
                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                       />
                     </svg>
-                    Nuevo Plan
+                    New Plan
                   </button>
                 </div>
                 <PlanDisplay
@@ -523,10 +524,10 @@ export default function Home() {
                 />
               </div>
             ) : (
-              <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 text-center">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-red-500"
+                    className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -539,42 +540,42 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                  Sin Plan Generado
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2">
+                  No Plan Generated
                 </h3>
-                <p className="text-gray-500 text-sm">
-                  Completa los parámetros a la izquierda y haz clic en &quot;Generar&quot; 
-                  para crear tu plan de clase dialéctico.
+                <p className="text-gray-500 text-xs sm:text-sm">
+                  Fill in the parameters and click &quot;Generate&quot; 
+                  to create your lesson plan.
                 </p>
 
-                {/* Feature highlights */}
-                <div className="mt-8 grid grid-cols-2 gap-4 text-left">
-                  <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                    <div className="text-2xl mb-2">📘</div>
-                    <h4 className="font-medium text-gray-800 text-sm">Tesis</h4>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Presentación desde la realidad concreta
+                {/* Feature highlights - PPP Stages */}
+                <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-2 sm:gap-4 text-left">
+                  <div className="p-3 sm:p-4 bg-purple-50 rounded-lg sm:rounded-xl border border-purple-100">
+                    <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🎯</div>
+                    <h4 className="font-medium text-gray-800 text-xs sm:text-sm">Lead-in</h4>
+                    <p className="text-xs text-gray-500 mt-1 hidden sm:block">
+                      Engage and activate prior knowledge
                     </p>
                   </div>
-                  <div className="p-4 bg-orange-50 rounded-xl border border-orange-100">
-                    <div className="text-2xl mb-2">🔍</div>
-                    <h4 className="font-medium text-gray-800 text-sm">Antítesis</h4>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Problematización y contradicciones
+                  <div className="p-3 sm:p-4 bg-blue-50 rounded-lg sm:rounded-xl border border-blue-100">
+                    <div className="text-xl sm:text-2xl mb-1 sm:mb-2">💡</div>
+                    <h4 className="font-medium text-gray-800 text-xs sm:text-sm">Presentation</h4>
+                    <p className="text-xs text-gray-500 mt-1 hidden sm:block">
+                      Introduce language in context
                     </p>
                   </div>
-                  <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                    <div className="text-2xl mb-2">⚡</div>
-                    <h4 className="font-medium text-gray-800 text-sm">Síntesis</h4>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Praxis transformadora
+                  <div className="p-3 sm:p-4 bg-orange-50 rounded-lg sm:rounded-xl border border-orange-100">
+                    <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🔄</div>
+                    <h4 className="font-medium text-gray-800 text-xs sm:text-sm">Practice</h4>
+                    <p className="text-xs text-gray-500 mt-1 hidden sm:block">
+                      Controlled and semi-controlled tasks
                     </p>
                   </div>
-                  <div className="p-4 bg-red-50 rounded-xl border border-red-100">
-                    <div className="text-2xl mb-2">🤝</div>
-                    <h4 className="font-medium text-gray-800 text-sm">Acción Social</h4>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Impacto en la comunidad
+                  <div className="p-3 sm:p-4 bg-green-50 rounded-lg sm:rounded-xl border border-green-100">
+                    <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🚀</div>
+                    <h4 className="font-medium text-gray-800 text-xs sm:text-sm">Production</h4>
+                    <p className="text-xs text-gray-500 mt-1 hidden sm:block">
+                      Free communicative practice
                     </p>
                   </div>
                 </div>
@@ -584,11 +585,12 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-sm text-gray-500">
+        <footer className="mt-8 sm:mt-10 md:mt-12 text-center text-xs sm:text-sm text-gray-500 px-4">
           <p>
-            Metodología basada en Cambridge English y British Council.
-            <br />
-            Enfoque pedagógico: Dialéctica Materialista | Marco CEFR
+            Based on Cambridge English and British Council methodology.
+            <br className="hidden sm:block" />
+            <span className="sm:hidden"> | </span>
+            PPP Framework | CEFR Standards
           </p>
         </footer>
       </div>

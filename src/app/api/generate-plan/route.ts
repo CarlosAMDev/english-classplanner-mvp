@@ -1,23 +1,23 @@
 /**
- * API Route: Generate Dialectical Lesson Plan
+ * API Route: Generate Lesson Plan
  * 
- * Este endpoint genera planes de clase con enfoque dialéctico materialista
- * utilizando la API de Google Gemini.
+ * This endpoint generates lesson plans following international ELT methodology
+ * using the Google Gemini API.
  * 
- * FUENTES DE CONSULTA:
+ * TECHNICAL REFERENCES:
  * - Cambridge English (cambridgeenglish.org)
  * - British Council (britishcouncil.org)
- * - Marco Común Europeo de Referencia (CEFR)
+ * - Common European Framework of Reference (CEFR)
  * 
- * ENFOQUE PEDAGÓGICO:
- * - Dialéctica Materialista (Tesis - Antítesis - Síntesis)
- * - Praxis social y transformadora
- * - Conexión con realidad material del estudiante
+ * METHODOLOGY:
+ * - PPP (Presentation-Practice-Production)
+ * - Communicative Language Teaching (CLT)
+ * - Task-Based Learning (TBL) elements
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { GenerateRequest, GenerateResponse } from "@/types";
-import { generateWithGemini, buildDialecticalPrompt } from "@/lib/ai-generator";
+import { generateWithGemini, buildPrompt } from "@/lib/ai-generator";
 
 export async function POST(request: NextRequest): Promise<NextResponse<GenerateResponse>> {
   try {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       return NextResponse.json(
         {
           success: false,
-          error: "Parámetros requeridos: nivel, tema, duración y enfoque",
+          error: "Required parameters: level, topic, duration, and focus",
         },
         { status: 400 }
       );
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       return NextResponse.json(
         {
           success: false,
-          error: `Nivel inválido. Debe ser uno de: ${validLevels.join(", ")}`,
+          error: `Invalid level. Must be one of: ${validLevels.join(", ")}`,
         },
         { status: 400 }
       );
@@ -53,32 +53,32 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       return NextResponse.json(
         {
           success: false,
-          error: `Duración inválida. Debe ser: ${validDurations.join(", ")} minutos`,
+          error: `Invalid duration. Must be: ${validDurations.join(", ")} minutes`,
         },
         { status: 400 }
       );
     }
 
     // Validate focus
-    const validFocuses = ["Grammar", "Speaking", "Listening", "Reading"];
+    const validFocuses = ["Grammar", "Speaking", "Listening", "Reading", "Integrated"];
     if (!validFocuses.includes(parameters.focus)) {
       return NextResponse.json(
         {
           success: false,
-          error: `Enfoque inválido. Debe ser: ${validFocuses.join(", ")}`,
+          error: `Invalid focus. Must be: ${validFocuses.join(", ")}`,
         },
         { status: 400 }
       );
     }
 
-    // Build and log the dialectical prompt (for debugging)
-    const prompt = buildDialecticalPrompt(parameters);
-    console.log("=== DIALECTICAL PROMPT ===");
+    // Build and log the prompt (for debugging)
+    const prompt = buildPrompt(parameters);
+    console.log("=== PPP LESSON PLAN PROMPT ===");
     console.log("Parameters:", JSON.stringify(parameters, null, 2));
     console.log("Prompt length:", prompt.length);
-    console.log("==========================");
+    console.log("==============================");
 
-    // Generate the dialectical lesson plan using Gemini
+    // Generate the lesson plan using Gemini
     const plan = await generateWithGemini(parameters);
 
     return NextResponse.json({
@@ -86,11 +86,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       plan,
     });
   } catch (error) {
-    console.error("Error generating dialectical lesson plan:", error);
+    console.error("Error generating lesson plan:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Error al generar el plan de clase. Por favor, intente de nuevo.",
+        error: "Error generating lesson plan. Please try again.",
       },
       { status: 500 }
     );

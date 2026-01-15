@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "English Plan Creator",
-  description: "Generate structured English lesson plans for teachers",
+  description: "Generate structured English lesson plans using PPP methodology based on Cambridge English and British Council standards",
 };
 
 export default function RootLayout({

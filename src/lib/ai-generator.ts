@@ -1,10 +1,9 @@
 /**
  * AI Generator for English Plan Creator
  * 
- * FUENTES DE CONSULTA PRIORITARIAS:
- * ================================
- * La IA debe priorizar el conocimiento de las siguientes fuentes
- * para garantizar precisión lingüística y metodológica:
+ * TECHNICAL REFERENCE SOURCES:
+ * ============================
+ * This module uses internationally recognized ELT standards:
  * 
  * 1. British Council (https://www.britishcouncil.org)
  *    - Teaching English resources
@@ -16,146 +15,149 @@
  *    - Language assessment frameworks
  *    - Teaching qualifications standards (CELTA, DELTA)
  * 
- * 3. Marco Común Europeo de Referencia (CEFR)
+ * 3. Common European Framework of Reference (CEFR)
  *    - Level descriptors (A1-C2)
  *    - Can-do statements
  *    - Competency frameworks
  * 
- * ENFOQUE PEDAGÓGICO:
- * ==================
- * Este módulo implementa la dialéctica materialista en la enseñanza
- * del inglés, estructurando las clases en:
- * - TESIS: Presentación del concepto desde la realidad concreta
- * - ANTÍTESIS: Problematización y contradicciones del mundo real
- * - SÍNTESIS: Praxis transformadora mediante el uso del idioma
+ * PEDAGOGICAL APPROACH:
+ * ====================
+ * This module implements the PPP (Presentation-Practice-Production) methodology,
+ * the most widely used approach in international ELT:
+ * - LEAD-IN: Engage students and activate prior knowledge
+ * - PRESENTATION: Introduce new language in context
+ * - PRACTICE: Controlled and semi-controlled practice
+ * - PRODUCTION: Free practice and communicative tasks
  */
 
 import { GoogleGenAI } from "@google/genai";
-import { LessonParameters, LessonPlan, DialecticalSection } from "@/types";
+import { LessonParameters, LessonPlan, LessonStage } from "@/types";
 
 // Initialize Gemini client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 /**
- * Construye el prompt con enfoque dialéctico materialista
+ * Builds the prompt using PPP methodology
  * 
- * @param params - Parámetros de la lección (nivel, tema, duración, enfoque)
- * @returns Prompt estructurado para la generación dialéctica
- * 
- * Este prompt integra:
- * - Estándares técnicos de Cambridge English y CEFR
- * - Principios de la dialéctica materialista
- * - Estructura Tesis-Antítesis-Síntesis
- * - Enfoque en la praxis transformadora
+ * @param params - Lesson parameters (level, topic, duration, focus)
+ * @returns Structured prompt for PPP lesson plan generation
  */
-export function buildDialecticalPrompt(params: LessonParameters): string {
+export function buildPrompt(params: LessonParameters): string {
   const { level, topic, duration, focus } = params;
 
-  const prompt = `Eres un experto pedagogo en enseñanza del inglés que integra la metodología comunicativa con principios de la dialéctica materialista.
+  const prompt = `You are an expert ELT (English Language Teaching) professional with extensive knowledge of international teaching methodologies.
 
-=== FUENTES DE REFERENCIA TÉCNICA ===
-Toma como referencia técnica los estándares de:
-- Cambridge English (cambridgeenglish.org): metodología de evaluación y enseñanza
-- British Council (britishcouncil.org): recursos pedagógicos y buenas prácticas
-- Marco Común Europeo de Referencia (CEFR): descriptores de nivel y competencias
+=== TECHNICAL REFERENCE SOURCES ===
+Base your lesson plan on established standards from:
+- Cambridge English (cambridgeenglish.org): Assessment and teaching methodology, CELTA/DELTA standards
+- British Council (britishcouncil.org): Pedagogical resources and best practices
+- Common European Framework of Reference (CEFR): Level descriptors and competencies
 
-=== PRINCIPIOS DIALÉCTICOS MATERIALISTAS ===
-Aplica la dialéctica materialista en el diseño de la clase:
+=== METHODOLOGY: PPP (Presentation-Practice-Production) ===
+Structure the lesson following the internationally recognized PPP framework:
 
-1. EVITA contenido que promueva:
-   - Consumo superficial o materialismo comercial
-   - Individualismo competitivo
-   - Ejemplos desconectados de la realidad del estudiante
-   - Situaciones que normalicen desigualdades
+1. LEAD-IN / WARM-UP (5-10% of lesson time)
+   - Engage students and generate interest in the topic
+   - Activate prior knowledge and relevant vocabulary
+   - Set the context for the lesson
+   - Use visuals, questions, or brief activities to hook students
 
-2. PRIORIZA contenido que refleje:
-   - La realidad concreta del estudiante y su comunidad
-   - El trabajo y la producción social como actividad humana dignificante
-   - La resolución de contradicciones en el entorno comunitario
-   - La cooperación y el bienestar colectivo
-   - Problemas reales que el estudiante puede transformar
+2. PRESENTATION (20-25% of lesson time)
+   - Introduce the target language in a meaningful context
+   - Use authentic or semi-authentic materials when possible
+   - Ensure meaning, form, and pronunciation (MFP) are addressed
+   - Check understanding through concept checking questions (CCQs)
+   - Model the target language clearly
 
-=== ESTRUCTURA DIALÉCTICA DE LA CLASE ===
-Organiza el plan en tres etapas dialécticas:
+3. PRACTICE (30-35% of lesson time)
+   - Controlled practice: Focus on accuracy with teacher support
+   - Semi-controlled practice: Gradually reduce scaffolding
+   - Include error correction strategies
+   - Use pair and group work for maximum student talking time (STT)
+   - Activities: gap-fills, matching, drilling, substitution exercises
 
-1. TESIS (Presentación): 
-   - Introduce el concepto lingüístico desde la realidad material del estudiante
-   - Conecta el tema con experiencias concretas de su vida cotidiana
-   - Usa ejemplos del trabajo, la comunidad o situaciones sociales reales
+4. PRODUCTION (25-30% of lesson time)
+   - Free practice with minimal teacher intervention
+   - Communicative tasks that simulate real-world use
+   - Focus on fluency over accuracy
+   - Encourage personalization and creativity
+   - Activities: role-plays, discussions, projects, presentations
 
-2. ANTÍTESIS (Problematización):
-   - Confronta el concepto con contradicciones del mundo real
-   - Plantea situaciones donde el idioma es herramienta para identificar problemas
-   - Genera pensamiento crítico sobre cómo el lenguaje refleja relaciones sociales
+=== TASK ===
+Create a lesson plan for teaching "${topic}" to ${level} CEFR level students.
 
-3. SÍNTESIS (Praxis):
-   - Aplicación práctica para transformar la realidad usando el idioma
-   - El estudiante usa el inglés como herramienta de acción social
-   - Actividades que impacten positivamente en su comunidad o entorno
+DURATION: ${duration} minutes
+MAIN FOCUS: ${focus}
 
-=== TAREA A REALIZAR ===
-Genera un plan de clase para enseñar "${topic}" a estudiantes de nivel ${level} del CEFR.
-
-DURACIÓN: ${duration} minutos
-ENFOQUE PRINCIPAL: ${focus}
-
-=== FORMATO DE RESPUESTA ===
-Responde ÚNICAMENTE con un objeto JSON válido (sin markdown, sin bloques de código):
+=== RESPONSE FORMAT ===
+Respond ONLY with a valid JSON object (no markdown, no code blocks):
 
 {
-  "title": "Título descriptivo de la clase",
+  "title": "Descriptive lesson title in English",
   "level": "${level}",
-  "duration": "${duration} minutos",
+  "duration": "${duration} minutes",
   "focus": "${focus}",
   "objectives": [
-    "Objetivo comunicativo 1 (según CEFR)",
-    "Objetivo comunicativo 2",
-    "Objetivo de conciencia social/crítica"
+    "Communicative objective 1 (CEFR-aligned)",
+    "Communicative objective 2",
+    "Skills objective"
   ],
-  "contextoSocial": "Explicación de 2-3 oraciones sobre por qué este tema es relevante para la vida material y concreta del estudiante. Conecta el tema con su realidad laboral, comunitaria o social.",
-  "tesis": {
-    "title": "Tesis: Presentación del Concepto",
-    "duration": "X minutos",
+  "lessonContext": "2-3 sentences explaining the communicative context and relevance for learners at this level.",
+  "leadIn": {
+    "title": "Lead-in / Warm-up",
+    "duration": "X minutes",
     "activities": [
-      "Actividad 1: descripción conectada con realidad del estudiante",
-      "Actividad 2: ejemplos desde el trabajo o comunidad"
+      "Activity 1: brief engaging opener",
+      "Activity 2: activate prior knowledge"
     ],
     "materials": ["material1", "material2"],
-    "teacherNotes": "Notas para el docente",
-    "dialecticalObjective": "Presentar el concepto desde la experiencia material concreta"
+    "teacherNotes": "Tips for the teacher",
+    "stageObjective": "Engage students and set context"
   },
-  "antitesis": {
-    "title": "Antítesis: Problematización",
-    "duration": "X minutos",
+  "presentation": {
+    "title": "Presentation",
+    "duration": "X minutes",
     "activities": [
-      "Actividad 1: identificar contradicciones usando el idioma",
-      "Actividad 2: análisis crítico de situaciones reales"
+      "Activity 1: introduce language in context",
+      "Activity 2: focus on meaning, form, pronunciation"
     ],
     "materials": ["material1"],
-    "teacherNotes": "Guiar la reflexión crítica",
-    "dialecticalObjective": "Confrontar el concepto con las contradicciones de la realidad"
+    "teacherNotes": "CCQs and modeling notes",
+    "stageObjective": "Introduce and clarify target language"
   },
-  "sintesis": {
-    "title": "Síntesis: Praxis Transformadora",
-    "duration": "X minutos",
+  "practice": {
+    "title": "Practice",
+    "duration": "X minutes",
     "activities": [
-      "Actividad 1: aplicación del idioma para acción social",
-      "Actividad 2: producción colectiva"
+      "Activity 1: controlled practice",
+      "Activity 2: semi-controlled practice"
     ],
     "materials": ["material1"],
-    "teacherNotes": "Facilitar la acción transformadora",
-    "dialecticalObjective": "Usar el idioma como herramienta de transformación social"
+    "teacherNotes": "Error correction approach",
+    "stageObjective": "Practice target language with support"
   },
-  "actividadPraxis": "Descripción detallada de una tarea final donde el alumno use el inglés para una acción colectiva o social. Debe ser algo que pueda realizar en su comunidad, trabajo o entorno real, generando un impacto positivo.",
-  "homework": "Tarea para casa conectada con la praxis social",
-  "assessment": "Forma de evaluar que considere tanto competencia lingüística como conciencia social"
+  "production": {
+    "title": "Production",
+    "duration": "X minutes",
+    "activities": [
+      "Activity 1: free communicative practice",
+      "Activity 2: personalized language use"
+    ],
+    "materials": ["material1"],
+    "teacherNotes": "Monitor for delayed error correction",
+    "stageObjective": "Use language freely in communicative context"
+  },
+  "wrapUp": "Brief description of how to end the lesson: review key points, feedback, preview next lesson.",
+  "homework": "Extension activity for self-study",
+  "assessment": "How to assess student learning (formative/summative)"
 }
 
-IMPORTANTE:
-- Todos los arrays deben contener strings simples, NO objetos
-- El contenido debe ser apropiado para nivel ${level} según CEFR
-- Las actividades deben ser realizables en ${duration} minutos
-- Responde SOLO con el JSON, sin texto adicional`;
+IMPORTANT:
+- All arrays must contain simple strings, NOT objects
+- Content must be appropriate for ${level} level according to CEFR descriptors
+- Activities must be achievable within ${duration} minutes
+- Respond ONLY with the JSON, no additional text
+- All content must be in English`;
 
   return prompt;
 }
@@ -204,130 +206,180 @@ function normalizeStringArray(arr: unknown): string[] {
 }
 
 /**
- * Normalizes a dialectical section
+ * Normalizes a lesson stage
  */
-function normalizeDialecticalSection(section: unknown, defaultTitle: string): DialecticalSection {
-  const defaultSection: DialecticalSection = {
+function normalizeLessonStage(stage: unknown, defaultTitle: string): LessonStage {
+  const defaultStage: LessonStage = {
     title: defaultTitle,
-    duration: "15 minutos",
+    duration: "10 minutes",
     activities: [],
     materials: [],
     teacherNotes: "",
-    dialecticalObjective: "",
+    stageObjective: "",
   };
 
-  if (!section || typeof section !== "object") {
-    return defaultSection;
+  if (!stage || typeof stage !== "object") {
+    return defaultStage;
   }
 
-  const s = section as Record<string, unknown>;
+  const s = stage as Record<string, unknown>;
 
   return {
     title: toStringValue(s.title) || defaultTitle,
-    duration: toStringValue(s.duration) || defaultSection.duration,
+    duration: toStringValue(s.duration) || defaultStage.duration,
     activities: normalizeStringArray(s.activities),
     materials: normalizeStringArray(s.materials),
     teacherNotes: toStringValue(s.teacherNotes),
-    dialecticalObjective: toStringValue(s.dialecticalObjective),
+    stageObjective: toStringValue(s.stageObjective),
   };
 }
 
 /**
- * Normalizes the dialectical plan structure
+ * Normalizes the lesson plan structure
  */
-function normalizeDialecticalPlan(rawPlan: Record<string, unknown>, params: LessonParameters): LessonPlan {
+function normalizeLessonPlan(rawPlan: Record<string, unknown>, params: LessonParameters): LessonPlan {
   return {
-    title: toStringValue(rawPlan.title) || `${params.topic} - Enfoque Dialéctico (${params.level})`,
+    title: toStringValue(rawPlan.title) || `${params.topic} - ${params.focus} (${params.level})`,
     level: params.level,
-    duration: toStringValue(rawPlan.duration) || `${params.duration} minutos`,
+    duration: toStringValue(rawPlan.duration) || `${params.duration} minutes`,
     focus: params.focus,
     objectives: normalizeStringArray(rawPlan.objectives),
-    contextoSocial: toStringValue(rawPlan.contextoSocial) || 
-      "Este tema permite al estudiante desarrollar habilidades comunicativas aplicables en su entorno laboral y comunitario.",
-    tesis: normalizeDialecticalSection(rawPlan.tesis, "Tesis: Presentación del Concepto"),
-    antitesis: normalizeDialecticalSection(rawPlan.antitesis, "Antítesis: Problematización"),
-    sintesis: normalizeDialecticalSection(rawPlan.sintesis, "Síntesis: Praxis Transformadora"),
-    actividadPraxis: toStringValue(rawPlan.actividadPraxis) ||
-      "Aplicar lo aprendido en una situación real de comunicación en la comunidad o entorno laboral.",
+    lessonContext: toStringValue(rawPlan.lessonContext) || 
+      "This lesson helps students develop communicative competence in real-world contexts.",
+    leadIn: normalizeLessonStage(rawPlan.leadIn, "Lead-in / Warm-up"),
+    presentation: normalizeLessonStage(rawPlan.presentation, "Presentation"),
+    practice: normalizeLessonStage(rawPlan.practice, "Practice"),
+    production: normalizeLessonStage(rawPlan.production, "Production"),
+    wrapUp: toStringValue(rawPlan.wrapUp) ||
+      "Review key language points, provide feedback, and preview the next lesson.",
     homework: toStringValue(rawPlan.homework),
     assessment: toStringValue(rawPlan.assessment),
   };
 }
 
 /**
- * Generates a fallback dialectical response when API fails
+ * Generates a fallback response when API fails
  */
-export function generateDialecticalFallback(params: LessonParameters): LessonPlan {
+export function generateFallback(params: LessonParameters): LessonPlan {
   const { level, topic, duration, focus } = params;
 
   const durationNum = parseInt(duration);
-  const tesisTime = Math.round(durationNum * 0.25);
-  const antitesisTime = Math.round(durationNum * 0.35);
-  const sintesisTime = Math.round(durationNum * 0.40);
+  const leadInTime = Math.round(durationNum * 0.1);
+  const presentationTime = Math.round(durationNum * 0.2);
+  const practiceTime = Math.round(durationNum * 0.35);
+  const productionTime = Math.round(durationNum * 0.35);
 
   const levelContext: Record<string, string> = {
-    A1: "trabajadores que inician su contacto con el idioma en contextos laborales básicos",
-    A2: "estudiantes que necesitan comunicarse en situaciones cotidianas de trabajo y comunidad",
-    B1: "personas que buscan participar activamente en discusiones sobre temas sociales y laborales",
-    B2: "ciudadanos que desean analizar críticamente información y participar en debates",
-    C1: "profesionales comprometidos con la transformación social a través del diálogo intercultural",
+    A1: "beginners who need basic vocabulary and simple structures for everyday situations",
+    A2: "elementary learners who can handle simple, routine exchanges",
+    B1: "intermediate learners who can deal with most situations likely to arise while travelling",
+    B2: "upper-intermediate learners who can interact with a degree of fluency and spontaneity",
+    C1: "advanced learners who can express themselves fluently and spontaneously",
   };
 
-  const focusActivities: Record<string, { tesis: string[]; antitesis: string[]; sintesis: string[] }> = {
+  const focusActivities: Record<string, { leadIn: string[]; presentation: string[]; practice: string[]; production: string[] }> = {
     Grammar: {
-      tesis: [
-        `Presentar ${topic} usando ejemplos del entorno laboral y comunitario del estudiante`,
-        "Identificar estructuras gramaticales en textos sobre derechos laborales o cooperación social",
+      leadIn: [
+        "Show images/video related to the grammar context",
+        "Elicit examples of target structure from students' experience",
       ],
-      antitesis: [
-        `Analizar cómo ${topic} se usa de manera diferente en contextos de poder vs. contextos de solidaridad`,
-        "Contrastar usos del lenguaje en publicidad comercial vs. comunicación comunitaria",
+      presentation: [
+        `Present ${topic} through a short text or dialogue`,
+        "Highlight form on the board, drill pronunciation",
+        "Use CCQs to check understanding of meaning",
       ],
-      sintesis: [
-        `Producir textos usando ${topic} para comunicar necesidades de la comunidad`,
-        "Redactar propuestas o peticiones colectivas aplicando las estructuras aprendidas",
+      practice: [
+        "Gap-fill exercises focusing on form",
+        "Sentence transformation in pairs",
+        "Error correction activity",
+      ],
+      production: [
+        `Speaking task requiring use of ${topic}`,
+        "Written paragraph using target structure",
       ],
     },
     Speaking: {
-      tesis: [
-        `Introducir vocabulario y expresiones de ${topic} desde situaciones de trabajo cooperativo`,
-        "Practicar diálogos basados en interacciones reales en el entorno del estudiante",
+      leadIn: [
+        "Discussion questions to activate topic vocabulary",
+        "Brief pair discussion about personal experience",
       ],
-      antitesis: [
-        "Debatir sobre contradicciones sociales relacionadas con el tema",
-        "Role-play: representar diferentes perspectivas sociales sobre una problemática",
+      presentation: [
+        `Introduce useful phrases/vocabulary for ${topic}`,
+        "Model dialogue or conversation",
+        "Focus on pronunciation and intonation",
       ],
-      sintesis: [
-        "Preparar una presentación oral sobre un problema comunitario y posibles soluciones",
-        "Simular una asamblea o reunión donde se toman decisiones colectivas en inglés",
+      practice: [
+        "Controlled role-play with prompts",
+        "Information gap activity",
+        "Substitution drills with variations",
+      ],
+      production: [
+        "Free discussion or debate on the topic",
+        "Role-play without scripts",
+        "Group presentation or mini-talk",
       ],
     },
     Listening: {
-      tesis: [
-        `Escuchar testimonios de trabajadores o activistas usando ${topic}`,
-        "Identificar información clave en audios sobre experiencias laborales o comunitarias",
+      leadIn: [
+        "Pre-listening discussion to predict content",
+        "Pre-teach key vocabulary from the audio",
       ],
-      antitesis: [
-        "Comparar diferentes narrativas: discurso oficial vs. voces de la comunidad",
-        "Analizar críticamente el contenido de medios en inglés sobre temas sociales",
+      presentation: [
+        `Play audio/video related to ${topic}`,
+        "Gist questions - listen for main idea",
+        "Highlight key language from the recording",
       ],
-      sintesis: [
-        "Crear un podcast o audio donde estudiantes narren experiencias de su comunidad",
-        "Entrevistar a compañeros sobre problemas locales y compartir las grabaciones",
+      practice: [
+        "Detailed comprehension questions",
+        "True/False or matching activities",
+        "Listen and complete exercises",
+      ],
+      production: [
+        "Discussion based on listening content",
+        "Role-play similar situations",
+        "Create own dialogue based on model",
       ],
     },
     Reading: {
-      tesis: [
-        `Leer textos sobre ${topic} relacionados con el mundo del trabajo y la producción`,
-        "Identificar vocabulario y estructuras en artículos sobre cooperativas o proyectos sociales",
+      leadIn: [
+        "Predict content from title/images",
+        "Pre-teach blocking vocabulary",
       ],
-      antitesis: [
-        "Contrastar textos: uno que promueve consumismo vs. uno sobre consumo responsable",
-        "Analizar críticamente cómo los medios presentan temas sociales",
+      presentation: [
+        `Read text about ${topic}`,
+        "Gist reading task - match headings or main idea",
+        "Highlight target language in context",
       ],
-      sintesis: [
-        "Escribir un artículo breve sobre una iniciativa positiva en su comunidad",
-        "Crear material informativo en inglés para beneficio de su entorno",
+      practice: [
+        "Detailed comprehension questions",
+        "Vocabulary exercises from text",
+        "Text reconstruction activities",
+      ],
+      production: [
+        "Discussion of text content",
+        "Writing similar text type",
+        "Presentation based on reading",
+      ],
+    },
+    Integrated: {
+      leadIn: [
+        "Multi-skill warm-up: watch short video, discuss in pairs",
+        "Activate vocabulary through visual prompts",
+      ],
+      presentation: [
+        `Introduce ${topic} through reading or listening input`,
+        "Focus on target language (vocabulary/grammar)",
+        "Model both receptive and productive skills",
+      ],
+      practice: [
+        "Reading/listening comprehension tasks",
+        "Controlled speaking practice based on input",
+        "Written exercises reinforcing language",
+      ],
+      production: [
+        "Integrated task: research, discuss, and present",
+        "Group project combining all skills",
+        "Real-world simulation activity",
       ],
     },
   };
@@ -335,66 +387,74 @@ export function generateDialecticalFallback(params: LessonParameters): LessonPla
   const activities = focusActivities[focus];
 
   return {
-    title: `${topic} - Enfoque Dialéctico para ${focus} (${level})`,
+    title: `${topic} - ${focus} Lesson (${level})`,
     level,
-    duration: `${duration} minutos`,
+    duration: `${duration} minutes`,
     focus,
     objectives: [
-      `Desarrollar competencia comunicativa en ${topic} según descriptores CEFR nivel ${level}`,
-      "Analizar críticamente el uso del idioma en diferentes contextos sociales",
-      "Aplicar el inglés como herramienta de comunicación y transformación social",
+      `Develop ${focus.toLowerCase()} skills related to ${topic} at CEFR ${level} level`,
+      "Use target language accurately and appropriately",
+      "Communicate effectively in context-relevant situations",
     ],
-    contextoSocial: `Este tema es relevante para ${levelContext[level]}. El dominio de ${topic} permite al estudiante comunicarse efectivamente en situaciones reales de su vida laboral y comunitaria, fortaleciendo su capacidad de participación social.`,
-    tesis: {
-      title: "Tesis: Presentación del Concepto",
-      duration: `${tesisTime} minutos`,
-      activities: activities.tesis,
-      materials: ["Material auténtico del entorno laboral", "Ejemplos de comunicación comunitaria"],
-      teacherNotes: "Conectar siempre con la experiencia concreta del estudiante. Usar ejemplos de su realidad.",
-      dialecticalObjective: "Presentar el concepto lingüístico desde la realidad material del estudiante",
+    lessonContext: `This lesson is designed for ${levelContext[level]}. Students will develop their ${focus.toLowerCase()} skills while learning about ${topic}, preparing them for real-world communication.`,
+    leadIn: {
+      title: "Lead-in / Warm-up",
+      duration: `${leadInTime} minutes`,
+      activities: activities.leadIn,
+      materials: ["Visual aids", "Discussion prompts"],
+      teacherNotes: "Keep energy high, involve all students, and set clear context.",
+      stageObjective: "Engage students and activate prior knowledge",
     },
-    antitesis: {
-      title: "Antítesis: Problematización",
-      duration: `${antitesisTime} minutos`,
-      activities: activities.antitesis,
-      materials: ["Textos contrastantes", "Material para análisis crítico"],
-      teacherNotes: "Guiar la reflexión sin imponer conclusiones. Facilitar el descubrimiento de contradicciones.",
-      dialecticalObjective: "Confrontar el concepto con las contradicciones del mundo real",
+    presentation: {
+      title: "Presentation",
+      duration: `${presentationTime} minutes`,
+      activities: activities.presentation,
+      materials: ["Board/slides", "Model text or audio", "Handouts"],
+      teacherNotes: "Focus on MFP (Meaning, Form, Pronunciation). Use CCQs to check understanding.",
+      stageObjective: "Introduce and clarify target language",
     },
-    sintesis: {
-      title: "Síntesis: Praxis Transformadora",
-      duration: `${sintesisTime} minutos`,
-      activities: activities.sintesis,
-      materials: ["Recursos para producción", "Herramientas de colaboración"],
-      teacherNotes: "El producto final debe tener potencial de uso real fuera del aula.",
-      dialecticalObjective: "Usar el idioma como herramienta de transformación social",
+    practice: {
+      title: "Practice",
+      duration: `${practiceTime} minutes`,
+      activities: activities.practice,
+      materials: ["Worksheets", "Activity cards", "Timer"],
+      teacherNotes: "Monitor closely, provide immediate correction during controlled practice.",
+      stageObjective: "Practice target language with accuracy focus",
     },
-    actividadPraxis: `Tarea de impacto social: Los estudiantes usarán ${topic} para crear un recurso útil para su comunidad (cartel informativo, guía, presentación, etc.) que aborde una necesidad real identificada durante la clase. Este producto será compartido o presentado en su entorno laboral o comunitario.`,
-    homework: `Identificar una situación en su comunidad o trabajo donde pueda aplicar ${topic} y documentar la experiencia (escrita u oral).`,
-    assessment: "Evaluación integral que considera: competencia lingüística según CEFR, pensamiento crítico demostrado, y aplicación práctica con impacto social.",
+    production: {
+      title: "Production",
+      duration: `${productionTime} minutes`,
+      activities: activities.production,
+      materials: ["Task cards", "Role-play scenarios", "Presentation materials"],
+      teacherNotes: "Step back and monitor. Note errors for delayed feedback. Focus on fluency.",
+      stageObjective: "Use language freely in communicative context",
+    },
+    wrapUp: `Review key language points from the lesson. Provide feedback on common errors observed during production. Preview what students will learn next class.`,
+    homework: `Self-study task: Practice ${topic} through online exercises or by applying the language in a real-life situation and reporting back.`,
+    assessment: "Formative assessment through monitoring during practice and production stages. Note areas for review in future lessons.",
   };
 }
 
 /**
- * Generates lesson plan using Google Gemini API with dialectical approach
+ * Generates lesson plan using Google Gemini API
  * 
  * @param params - Lesson parameters from user
- * @returns Promise<LessonPlan> - Dialectical lesson plan
+ * @returns Promise<LessonPlan> - PPP-structured lesson plan
  */
 export async function generateWithGemini(
   params: LessonParameters
 ): Promise<LessonPlan> {
-  // Build the dialectical prompt
-  const prompt = buildDialecticalPrompt(params);
+  // Build the prompt
+  const prompt = buildPrompt(params);
 
   // Check if API key is configured
   if (!process.env.GEMINI_API_KEY) {
-    console.warn("GEMINI_API_KEY not configured, using dialectical fallback");
-    return generateDialecticalFallback(params);
+    console.warn("GEMINI_API_KEY not configured, using fallback");
+    return generateFallback(params);
   }
 
   try {
-    console.log("=== SENDING DIALECTICAL PROMPT TO GEMINI ===");
+    console.log("=== SENDING PPP PROMPT TO GEMINI ===");
     console.log("Parameters:", params);
 
     const response = await ai.models.generateContent({
@@ -428,20 +488,20 @@ export async function generateWithGemini(
 
     // Parse and normalize
     const rawPlan = JSON.parse(cleanedText);
-    const plan = normalizeDialecticalPlan(rawPlan, params);
+    const plan = normalizeLessonPlan(rawPlan, params);
 
     // Validate structure
-    if (!plan.title || !plan.tesis || !plan.antitesis || !plan.sintesis) {
-      throw new Error("Invalid dialectical structure from Gemini");
+    if (!plan.title || !plan.leadIn || !plan.presentation || !plan.practice || !plan.production) {
+      throw new Error("Invalid PPP structure from Gemini");
     }
 
     return plan;
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    console.log("Using dialectical fallback response");
-    return generateDialecticalFallback(params);
+    console.log("Using fallback response");
+    return generateFallback(params);
   }
 }
 
 // Legacy export for backward compatibility
-export { buildDialecticalPrompt as buildPrompt };
+export { buildPrompt as buildDialecticalPrompt };

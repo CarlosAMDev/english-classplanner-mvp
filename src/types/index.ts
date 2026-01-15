@@ -1,10 +1,10 @@
-// Types for English Plan Creator - Dialectical Materialist Approach
+// Types for English Plan Creator - International ELT Methodology
 
 export type Level = "A1" | "A2" | "B1" | "B2" | "C1";
 
 export type Duration = "45" | "60" | "90";
 
-export type Focus = "Grammar" | "Speaking" | "Listening" | "Reading";
+export type Focus = "Grammar" | "Speaking" | "Listening" | "Reading" | "Integrated";
 
 export interface LessonParameters {
   level: Level;
@@ -14,26 +14,32 @@ export interface LessonParameters {
 }
 
 /**
- * Sección dialéctica del plan de clase
- * Basada en la estructura Tesis-Antítesis-Síntesis
+ * Lesson stage following PPP (Presentation-Practice-Production) methodology
+ * Based on international ELT standards from Cambridge, British Council, and CEFR
  */
-export interface DialecticalSection {
+export interface LessonStage {
   title: string;
   duration: string;
   activities: string[];
   materials?: string[];
   teacherNotes?: string;
-  /** Objetivo dialéctico de esta fase */
-  dialecticalObjective?: string;
+  /** Learning objective for this stage */
+  stageObjective?: string;
 }
 
 /**
- * Plan de clase con enfoque dialéctico materialista
+ * Lesson plan following international ELT methodology
  * 
- * Fuentes de referencia técnica:
+ * Technical references:
  * - Cambridge English: https://www.cambridgeenglish.org
  * - British Council: https://www.britishcouncil.org
- * - Marco Común Europeo de Referencia (CEFR)
+ * - Common European Framework of Reference (CEFR)
+ * 
+ * Methodology: PPP (Presentation-Practice-Production)
+ * - Lead-in/Warm-up: Activate prior knowledge and engage students
+ * - Presentation: Introduce new language in context
+ * - Practice: Controlled and semi-controlled practice activities
+ * - Production: Free practice and communicative activities
  */
 export interface LessonPlan {
   title: string;
@@ -43,34 +49,39 @@ export interface LessonPlan {
   objectives: string[];
   
   /**
-   * Contexto Social: Explicación de por qué este tema es relevante
-   * para la vida material y concreta del estudiante
+   * Lesson Context: Brief description of the communicative context
+   * and relevance for the target learners
    */
-  contextoSocial: string;
+  lessonContext: string;
   
   /**
-   * TESIS: Presentación del concepto
-   * Introducción del tema desde la realidad concreta del estudiante
+   * LEAD-IN / WARM-UP: Engage students and activate prior knowledge
+   * Set the context and generate interest in the topic
    */
-  tesis: DialecticalSection;
+  leadIn: LessonStage;
   
   /**
-   * ANTÍTESIS: Problematización
-   * Confrontación del concepto con contradicciones del mundo real
+   * PRESENTATION: Introduce new language in context
+   * Present target language through meaningful context
    */
-  antitesis: DialecticalSection;
+  presentation: LessonStage;
   
   /**
-   * SÍNTESIS: Praxis transformadora
-   * Aplicación práctica para transformar la realidad usando el idioma
+   * PRACTICE: Controlled and semi-controlled practice
+   * Students practice the target language with support
    */
-  sintesis: DialecticalSection;
+  practice: LessonStage;
   
   /**
-   * Actividad de Praxis: Tarea final donde el alumno usa el inglés
-   * para una acción colectiva o social transformadora
+   * PRODUCTION: Free practice and communicative activities
+   * Students use the language freely in communicative tasks
    */
-  actividadPraxis: string;
+  production: LessonStage;
+  
+  /**
+   * Wrap-up activity or final task consolidating the lesson
+   */
+  wrapUp: string;
   
   homework?: string;
   assessment?: string;
@@ -97,3 +108,6 @@ export interface LessonSection {
   materials?: string[];
   teacherNotes?: string;
 }
+
+// Legacy alias - keeping for backward compatibility
+export type DialecticalSection = LessonStage;
