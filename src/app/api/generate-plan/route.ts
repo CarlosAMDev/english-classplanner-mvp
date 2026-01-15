@@ -13,11 +13,16 @@
  * - PPP (Presentation-Practice-Production)
  * - Communicative Language Teaching (CLT)
  * - Task-Based Learning (TBL) elements
+ * 
+ * AUTHENTIC CONTENT:
+ * - When useRealContent is true, the generator will use scraped
+ *   content from Breaking News English and other sources
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { GenerateRequest, GenerateResponse } from "@/types";
 import { generateWithGemini, buildPrompt } from "@/lib/ai-generator";
+import { isContentAvailable } from "@/lib/content-loader";
 
 export async function POST(request: NextRequest): Promise<NextResponse<GenerateResponse>> {
   try {
@@ -71,15 +76,23 @@ export async function POST(request: NextRequest): Promise<NextResponse<GenerateR
       );
     }
 
+    // Check if real content is requested and available
+    const useRealContent = parameters.useRealContent ?? false;
+    if (useRealContent) {
+      const contentStatus = isContentAvailable();
+      console.log("Content availability:", contentStatus);
+    }
+
     // Build and log the prompt (for debugging)
     const prompt = buildPrompt(parameters);
     console.log("=== PPP LESSON PLAN PROMPT ===");
     console.log("Parameters:", JSON.stringify(parameters, null, 2));
+    console.log("Use Real Content:", useRealContent);
     console.log("Prompt length:", prompt.length);
     console.log("==============================");
 
     // Generate the lesson plan using Gemini
-    const plan = await generateWithGemini(parameters);
+    const plan = await generateWithGemini(parameters, useRealContent);
 
     return NextResponse.json({
       success: true,

@@ -11,6 +11,8 @@ export interface LessonParameters {
   topic: string;
   duration: Duration;
   focus: Focus;
+  /** Whether to use scraped authentic content for the lesson */
+  useRealContent?: boolean;
 }
 
 /**
@@ -85,6 +87,15 @@ export interface LessonPlan {
   
   homework?: string;
   assessment?: string;
+  
+  /**
+   * Source content information when using scraped authentic material
+   */
+  sourceContent?: {
+    title: string;
+    source: string;
+    url?: string;
+  };
 }
 
 export interface GenerateRequest {

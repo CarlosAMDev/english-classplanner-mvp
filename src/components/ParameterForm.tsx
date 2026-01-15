@@ -48,6 +48,7 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
   const [topic, setTopic] = useState("");
   const [duration, setDuration] = useState<Duration>("60");
   const [focus, setFocus] = useState<Focus>("Grammar");
+  const [useRealContent, setUseRealContent] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +56,7 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
       alert("Please enter a topic for the lesson");
       return;
     }
-    onSubmit({ level, topic: topic.trim(), duration, focus });
+    onSubmit({ level, topic: topic.trim(), duration, focus, useRealContent });
   };
 
   return (
@@ -156,6 +157,43 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Use Real Content Toggle */}
+      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-3 sm:p-4 rounded-lg border border-emerald-200">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex-1">
+            <label htmlFor="useRealContent" className="block text-sm font-semibold text-emerald-800">
+              Use Authentic Materials
+            </label>
+            <p className="text-xs text-emerald-600 mt-0.5">
+              Generate lesson with real news articles from Breaking News English
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={useRealContent}
+            onClick={() => setUseRealContent(!useRealContent)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+              useRealContent ? 'bg-emerald-500' : 'bg-gray-300'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                useRealContent ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+        {useRealContent && (
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-700">
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>AI will use scraped content matching your level</span>
+          </div>
+        )}
       </div>
 
       {/* Submit Button */}

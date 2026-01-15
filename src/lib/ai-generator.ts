@@ -32,6 +32,12 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { LessonParameters, LessonPlan, LessonStage } from "@/types";
+import { 
+  getBestContentForLesson, 
+  formatContentForPrompt, 
+  ScrapedContent,
+  normalizeToCEFR 
+} from "@/lib/content-loader";
 
 // Initialize Gemini client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -40,10 +46,31 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
  * Builds the prompt using PPP methodology
  * 
  * @param params - Lesson parameters (level, topic, duration, focus)
+ * @param scrapedContent - Optional scraped content to use as base material
  * @returns Structured prompt for PPP lesson plan generation
  */
-export function buildPrompt(params: LessonParameters): string {
+export function buildPrompt(params: LessonParameters, scrapedContent?: ScrapedContent | null): string {
   const { level, topic, duration, focus } = params;
+
+  // Include scraped content if available
+  let contentSection = '';
+  if (scrapedContent) {
+    contentSection = `
+=== AUTHENTIC MATERIAL TO USE ===
+You MUST base the lesson on this authentic material from ${scrapedContent.source}:
+
+${formatContentForPrompt(scrapedContent)}
+
+IMPORTANT: 
+- Use this authentic text as the main reading/listening material for the lesson
+- Adapt the activities to work with this specific content
+- Extract vocabulary and grammar from this text
+- Design comprehension questions based on this content
+- The lesson should help students understand and work with this material
+=====================================
+
+`;
+  }
 
   const prompt = `You are an expert ELT (English Language Teaching) professional with extensive knowledge of international teaching methodologies.
 
@@ -53,7 +80,7 @@ Base your lesson plan on established standards from:
 - British Council (britishcouncil.org): Pedagogical resources and best practices
 - Common European Framework of Reference (CEFR): Level descriptors and competencies
 
-=== METHODOLOGY: PPP (Presentation-Practice-Production) ===
+${contentSection}=== METHODOLOGY: PPP (Presentation-Practice-Production) ===
 Structure the lesson following the internationally recognized PPP framework:
 
 1. LEAD-IN / WARM-UP (5-10% of lesson time)
@@ -64,7 +91,7 @@ Structure the lesson following the internationally recognized PPP framework:
 
 2. PRESENTATION (20-25% of lesson time)
    - Introduce the target language in a meaningful context
-   - Use authentic or semi-authentic materials when possible
+   - ${scrapedContent ? 'Use the provided authentic material' : 'Use authentic or semi-authentic materials when possible'}
    - Ensure meaning, form, and pronunciation (MFP) are addressed
    - Check understanding through concept checking questions (CCQs)
    - Model the target language clearly
@@ -85,6 +112,7 @@ Structure the lesson following the internationally recognized PPP framework:
 
 === TASK ===
 Create a lesson plan for teaching "${topic}" to ${level} CEFR level students.
+${scrapedContent ? `\nUSE THE PROVIDED AUTHENTIC MATERIAL from "${scrapedContent.title}" as the main teaching resource.` : ''}
 
 DURATION: ${duration} minutes
 MAIN FOCUS: ${focus}
@@ -102,7 +130,7 @@ Respond ONLY with a valid JSON object (no markdown, no code blocks):
     "Communicative objective 2",
     "Skills objective"
   ],
-  "lessonContext": "2-3 sentences explaining the communicative context and relevance for learners at this level.",
+  "lessonContext": "2-3 sentences explaining the communicative context and relevance for learners at this level.${scrapedContent ? ' Mention that this lesson uses authentic material.' : ''}",
   "leadIn": {
     "title": "Lead-in / Warm-up",
     "duration": "X minutes",
@@ -118,10 +146,10 @@ Respond ONLY with a valid JSON object (no markdown, no code blocks):
     "title": "Presentation",
     "duration": "X minutes",
     "activities": [
-      "Activity 1: introduce language in context",
+      "Activity 1: introduce language in context${scrapedContent ? ' using the authentic text' : ''}",
       "Activity 2: focus on meaning, form, pronunciation"
     ],
-    "materials": ["material1"],
+    "materials": ["material1"${scrapedContent ? `, "Authentic text: ${scrapedContent.title}"` : ''}],
     "teacherNotes": "CCQs and modeling notes",
     "stageObjective": "Introduce and clarify target language"
   },
@@ -149,7 +177,12 @@ Respond ONLY with a valid JSON object (no markdown, no code blocks):
   },
   "wrapUp": "Brief description of how to end the lesson: review key points, feedback, preview next lesson.",
   "homework": "Extension activity for self-study",
-  "assessment": "How to assess student learning (formative/summative)"
+  "assessment": "How to assess student learning (formative/summative)"${scrapedContent ? `,
+  "sourceContent": {
+    "title": "${scrapedContent.title}",
+    "source": "${scrapedContent.source}",
+    "url": "${scrapedContent.url || ''}"
+  }` : ''}
 }
 
 IMPORTANT:
@@ -157,7 +190,7 @@ IMPORTANT:
 - Content must be appropriate for ${level} level according to CEFR descriptors
 - Activities must be achievable within ${duration} minutes
 - Respond ONLY with the JSON, no additional text
-- All content must be in English`;
+- All content must be in English${scrapedContent ? '\n- Base activities on the provided authentic material' : ''}`;
 
   return prompt;
 }
@@ -439,13 +472,27 @@ export function generateFallback(params: LessonParameters): LessonPlan {
  * Generates lesson plan using Google Gemini API
  * 
  * @param params - Lesson parameters from user
+ * @param useRealContent - Whether to use scraped authentic content
  * @returns Promise<LessonPlan> - PPP-structured lesson plan
  */
 export async function generateWithGemini(
-  params: LessonParameters
+  params: LessonParameters,
+  useRealContent: boolean = false
 ): Promise<LessonPlan> {
-  // Build the prompt
-  const prompt = buildPrompt(params);
+  // Try to get scraped content if requested
+  let scrapedContent: ScrapedContent | null = null;
+  
+  if (useRealContent) {
+    scrapedContent = getBestContentForLesson(params.level, params.topic);
+    if (scrapedContent) {
+      console.log(`Using scraped content: "${scrapedContent.title}" from ${scrapedContent.source}`);
+    } else {
+      console.log('No matching scraped content found, generating without authentic material');
+    }
+  }
+
+  // Build the prompt with or without scraped content
+  const prompt = buildPrompt(params, scrapedContent);
 
   // Check if API key is configured
   if (!process.env.GEMINI_API_KEY) {
