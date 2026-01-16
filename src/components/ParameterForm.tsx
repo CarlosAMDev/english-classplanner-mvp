@@ -140,20 +140,20 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
         <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
           Lesson Focus
         </label>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
           {FOCUSES.map((f) => (
             <button
               key={f.value}
               type="button"
               onClick={() => setFocus(f.value)}
-              className={`py-3 sm:py-4 px-1 sm:px-3 rounded-lg border-2 transition-all duration-200 overflow-hidden ${
+              className={`py-4 sm:py-4 px-2 sm:px-3 rounded-lg border-2 transition-all duration-200 ${
                 focus === f.value
                   ? "border-primary-500 bg-primary-50 text-primary-700"
                   : "border-gray-200 hover:border-gray-300 bg-white"
               }`}
             >
               <span className="block text-xl sm:text-2xl mb-1">{f.icon}</span>
-              <span className="block font-medium text-[10px] sm:text-sm truncate">{f.label}</span>
+              <span className="block font-medium text-xs sm:text-sm">{f.label}</span>
             </button>
           ))}
         </div>
@@ -175,13 +175,13 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
             role="switch"
             aria-checked={useRealContent}
             onClick={() => setUseRealContent(!useRealContent)}
-            className={`relative inline-flex h-7 w-12 sm:h-6 sm:w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+            className={`relative inline-flex h-8 w-14 sm:h-6 sm:w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
               useRealContent ? 'bg-emerald-500' : 'bg-gray-300'
             }`}
           >
             <span
-              className={`pointer-events-none inline-block h-6 w-6 sm:h-5 sm:w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                useRealContent ? 'translate-x-5 sm:translate-x-5' : 'translate-x-0'
+              className={`pointer-events-none inline-block h-7 w-7 sm:h-5 sm:w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                useRealContent ? 'translate-x-6 sm:translate-x-5' : 'translate-x-0'
               }`}
             />
           </button>
