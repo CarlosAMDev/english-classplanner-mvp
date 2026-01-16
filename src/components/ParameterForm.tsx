@@ -175,12 +175,12 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
             role="switch"
             aria-checked={useRealContent}
             onClick={() => setUseRealContent(!useRealContent)}
-            className={`relative inline-flex items-center h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+            className={`relative h-7 w-12 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
               useRealContent ? 'bg-emerald-500' : 'bg-gray-300'
             }`}
           >
             <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+              className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform duration-200 ease-in-out ${
                 useRealContent ? 'translate-x-5' : 'translate-x-0'
               }`}
             />
