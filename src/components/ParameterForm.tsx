@@ -180,8 +180,8 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
             }`}
           >
             <span
-              className={`absolute top-1 left-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ease-in-out ${
-                useRealContent ? 'translate-x-5' : 'translate-x-0'
+              className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all duration-200 ease-in-out ${
+                useRealContent ? 'right-1' : 'left-1'
               }`}
             />
           </button>
