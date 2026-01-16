@@ -170,10 +170,14 @@ export default function ParameterForm({ onSubmit, isLoading }: ParameterFormProp
       >
         <div className="flex items-center justify-between gap-3">
           <div className="flex-1">
-            <label className="block text-sm font-semibold text-emerald-800 cursor-pointer">
+            <label className={`block text-sm font-semibold cursor-pointer ${
+              useRealContent ? 'text-emerald-800' : 'text-gray-700'
+            }`}>
               Use Authentic Materials
             </label>
-            <p className="text-xs text-emerald-600 mt-0.5">
+            <p className={`text-xs mt-0.5 ${
+              useRealContent ? 'text-emerald-600' : 'text-gray-500'
+            }`}>
               Generate lesson with real news articles from Breaking News English
             </p>
           </div>
